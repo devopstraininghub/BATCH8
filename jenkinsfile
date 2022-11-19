@@ -1,0 +1,25 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone SCM') {
+            steps {
+                echo 'clong project GH '
+				git branch: 'main', credentialsId: 'githubcredentials', url: 'https://github.com/devopstraininghub/BATCH8.git'
+            }
+        }
+		
+		stage('Build Artifact') {
+            steps {
+                echo 'building using maven tool'
+				sh 'mvn clean install'
+            }
+        }
+		
+		stage('Deploy to Tomcat server') {
+            steps {
+                deploy adapters: [tomcat9(credentialsId: '32384c4a-772d-449d-93d8-03c9a88dd5df', path: '', url: 'http://35.172.226.101:8090/')], contextPath: 'FB', war: '**/*.war'
+            }
+        }
+    }
+}
